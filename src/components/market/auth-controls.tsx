@@ -1,28 +1,90 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
-import { LogIn, UserPlus } from "lucide-react";
+import { LogIn, LogOut, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const clerkEnabled = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
+const demoUserKey = "alphaforge-demo-user";
+
+type DemoUser = {
+  name: string;
+  email: string;
+};
 
 export function AuthControls() {
   if (!clerkEnabled) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        disabled
-        title="Add Clerk keys to enable Google sign-in and sign-up."
-        className="hidden min-h-11 px-4 sm:inline-flex md:min-h-8"
-      >
-        <LogIn className="size-4" aria-hidden />
-        Sign in / up
-      </Button>
-    );
+    return <DemoAuthControls />;
   }
 
   return <ClerkAuthControls />;
+}
+
+function readDemoUser(): DemoUser | null {
+  try {
+    const raw = window.localStorage.getItem(demoUserKey);
+    return raw ? (JSON.parse(raw) as DemoUser) : null;
+  } catch {
+    return null;
+  }
+}
+
+function DemoAuthControls() {
+  const [user, setUser] = useState<DemoUser | null>(null);
+
+  useEffect(() => {
+    const update = () => setUser(readDemoUser());
+    const id = window.setTimeout(update, 0);
+    window.addEventListener("storage", update);
+    window.addEventListener("alphaforge-demo-auth", update);
+
+    return () => {
+      window.clearTimeout(id);
+      window.removeEventListener("storage", update);
+      window.removeEventListener("alphaforge-demo-auth", update);
+    };
+  }, []);
+
+  if (user) {
+    return (
+      <div className="hidden items-center gap-2 sm:flex">
+        <span className="max-w-32 truncate text-xs text-muted-foreground" title={user.email}>
+          {user.name || user.email}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          className="min-h-11 px-4 md:min-h-8"
+          onClick={() => {
+            window.localStorage.removeItem(demoUserKey);
+            window.dispatchEvent(new Event("alphaforge-demo-auth"));
+          }}
+        >
+          <LogOut className="size-4" aria-hidden />
+          Sign out
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="hidden items-center gap-2 sm:flex">
+      <Button asChild variant="outline" size="sm" className="min-h-11 px-4 md:min-h-8">
+        <Link href="/sign-in">
+          <LogIn className="size-4" aria-hidden />
+          Sign in
+        </Link>
+      </Button>
+      <Button asChild size="sm" className="min-h-11 bg-cyan-300 px-4 text-black hover:bg-cyan-200 md:min-h-8">
+        <Link href="/sign-up">
+          <UserPlus className="size-4" aria-hidden />
+          Sign up
+        </Link>
+      </Button>
+    </div>
+  );
 }
 
 function ClerkAuthControls() {

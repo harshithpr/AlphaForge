@@ -19,8 +19,21 @@ type ExplainData = {
   keyNewsFactors?: string[];
   warning: string;
   updatedAt: string;
+  currency?: string;
+  exchange?: string;
+  source?: string;
+  resolutionNote?: string;
   error?: string;
 };
+
+function formatPrice(value: number | null, currency?: string) {
+  if (typeof value !== "number") return "N/A";
+  const formatted = value.toLocaleString(undefined, {
+    maximumFractionDigits: value >= 100 ? 2 : 4,
+  });
+
+  return currency ? `${currency} ${formatted}` : `$${formatted}`;
+}
 
 export function StockExplainBox() {
   const [symbol, setSymbol] = useState("");
@@ -72,7 +85,9 @@ export function StockExplainBox() {
     <section className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
       <h2 className="text-2xl font-semibold tracking-tight">Stock Explain</h2>
       <p className="mt-2 text-sm text-white/55">
-        Type a ticker and get pros, cons, risks, outlook notes, and key market factors.
+        Type a ticker and get pros, cons, risks, outlook notes, and key market factors. Global
+        symbols work best with their local exchange suffix, like `7203.T`, `ASML.AS`, `0700.HK`,
+        or `RELIANCE.NS`.
       </p>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
@@ -82,7 +97,7 @@ export function StockExplainBox() {
           onKeyDown={(event) => {
             if (event.key === "Enter") void explainStock();
           }}
-          placeholder="Example: NVDA, AAPL, AMD"
+          placeholder="Example: NVDA, 7203.T, ASML.AS, RELIANCE.NS"
           className="min-h-11 flex-1 rounded-lg border border-white/10 bg-black/30 px-4 text-sm outline-none focus:border-cyan-400/60"
         />
 
@@ -108,7 +123,7 @@ export function StockExplainBox() {
               {data.symbol} · {data.name}
             </h3>
             <p className="mt-2 text-sm leading-6 text-white/60">
-              Price: ${data.price ?? "N/A"} · Change:{" "}
+              Price: {formatPrice(data.price, data.currency)} · Change:{" "}
               {typeof data.changePercent === "number" ? data.changePercent.toFixed(2) : data.changePercent}% ·
               Risk: {data.risk} · Market: {data.marketState} · Updated{" "}
               {new Date(data.updatedAt).toLocaleTimeString()}
@@ -116,7 +131,12 @@ export function StockExplainBox() {
             <p className="mt-2 text-xs leading-5 text-white/45">
               Market cap: {data.marketCap} · P/E: {data.pe} · Volume:{" "}
               {typeof data.volume === "number" ? data.volume.toLocaleString() : data.volume}
+              {data.source ? ` · Source: ${data.source}` : ""}
+              {data.exchange ? ` · Exchange: ${data.exchange}` : ""}
             </p>
+            {data.resolutionNote ? (
+              <p className="mt-2 text-xs leading-5 text-cyan-100/70">{data.resolutionNote}</p>
+            ) : null}
           </div>
 
           <div className="rounded-lg border border-emerald-400/20 bg-emerald-400/5 p-4">

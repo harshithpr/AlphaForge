@@ -42,7 +42,7 @@ export function MarketBrain({ market }: { market: MarketState }) {
             <Database className="size-4 text-emerald-300" aria-hidden />
             Attractive Areas
           </p>
-          <h3 className="mt-3 min-w-0 break-words text-3xl font-semibold leading-tight tracking-tight sm:text-4xl xl:text-3xl 2xl:text-4xl">
+          <h3 className="mt-3 min-w-0 break-words text-xl font-semibold leading-snug sm:text-2xl">
             {market.mostBullishSector}
           </h3>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">

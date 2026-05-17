@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, Bell, BrainCircuit, Menu, Search, Star, UserRound } from "lucide-react";
+import { BarChart3, Bell, BrainCircuit, LogIn, Menu, Search, Star, UserPlus, UserRound } from "lucide-react";
 import { AuthControls } from "@/components/market/auth-controls";
 import { AlphaForgeMark, AlphaForgeWordmark } from "@/components/market/brand-mark";
 import { Button } from "@/components/ui/button";
@@ -76,6 +76,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       </Link>
                     </Button>
                   ))}
+                </div>
+                <div className="mt-6 grid gap-2 border-t border-white/10 pt-4">
+                  <Button asChild variant="outline" className="justify-start">
+                    <Link href="/sign-in">
+                      <LogIn className="size-4" aria-hidden />
+                      Sign in
+                    </Link>
+                  </Button>
+                  <Button asChild className="justify-start bg-cyan-300 text-black hover:bg-cyan-200">
+                    <Link href="/sign-up">
+                      <UserPlus className="size-4" aria-hidden />
+                      Sign up
+                    </Link>
+                  </Button>
                 </div>
               </SheetContent>
             </Sheet>
