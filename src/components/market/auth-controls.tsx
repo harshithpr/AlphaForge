@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 
 const clerkEnabled = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
 const demoUserKey = "alphaforge-demo-user";
+const demoAuthKey = "alphaforge-demo-auth";
 
 type DemoUser = {
   name: string;
@@ -25,10 +26,21 @@ export function AuthControls() {
 function readDemoUser(): DemoUser | null {
   try {
     const raw = window.localStorage.getItem(demoUserKey);
-    return raw ? (JSON.parse(raw) as DemoUser) : null;
+    if (raw) return JSON.parse(raw) as DemoUser;
+
+    const cookieUser = document.cookie
+      .split("; ")
+      .find((cookie) => cookie.startsWith(`${demoUserKey}=`))
+      ?.split("=")[1];
+
+    return cookieUser ? (JSON.parse(decodeURIComponent(cookieUser)) as DemoUser) : null;
   } catch {
     return null;
   }
+}
+
+function clearCookie(name: string) {
+  document.cookie = `${name}=; Path=/; Max-Age=0; SameSite=Lax`;
 }
 
 function DemoAuthControls() {
@@ -59,6 +71,8 @@ function DemoAuthControls() {
           className="min-h-11 px-4 md:min-h-8"
           onClick={() => {
             window.localStorage.removeItem(demoUserKey);
+            clearCookie(demoAuthKey);
+            clearCookie(demoUserKey);
             window.dispatchEvent(new Event("alphaforge-demo-auth"));
           }}
         >

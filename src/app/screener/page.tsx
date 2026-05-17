@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/market/app-shell";
+import { LiveMarketSearch } from "@/components/market/live-market-search";
 import { ScreenerClient } from "@/components/market/screener-client";
 import { stocks } from "@/lib/mock-data";
 
@@ -12,11 +13,12 @@ export default function ScreenerPage() {
         <div>
           <h1 className="break-words text-3xl font-semibold sm:text-4xl xl:text-4xl">Global Market Screener</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Search equities across major global exchanges using live market data. Results may vary
-            during active trading hours. Demo rankings remain visible until a global provider key is
-            connected.
+            Search global symbols across major exchanges. Use the live lookup for the broad provider
+            universe; the ranked table below is the fast scored research sample until a licensed
+            full-universe database is connected.
           </p>
         </div>
+        <LiveMarketSearch />
         <ScreenerClient stocks={stocks} />
       </div>
     </AppShell>

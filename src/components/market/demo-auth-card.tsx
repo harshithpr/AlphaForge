@@ -8,6 +8,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const demoUserKey = "alphaforge-demo-user";
+const demoAuthKey = "alphaforge-demo-auth";
+const cookieMaxAge = 60 * 60 * 24 * 365;
+
+function setCookie(name: string, value: string) {
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${cookieMaxAge}; SameSite=Lax${secure}`;
+}
+
+function redirectTarget() {
+  const params = new URLSearchParams(window.location.search);
+  const target = params.get("redirect_url");
+
+  if (target && target.startsWith("/") && !target.startsWith("//")) {
+    return target;
+  }
+
+  return "/dashboard";
+}
 
 export function DemoAuthCard({ mode }: { mode: "sign-in" | "sign-up" }) {
   const router = useRouter();
@@ -19,16 +37,18 @@ export function DemoAuthCard({ mode }: { mode: "sign-in" | "sign-up" }) {
     const cleanEmail = email.trim();
     if (!cleanEmail) return;
 
-    window.localStorage.setItem(
-      demoUserKey,
-      JSON.stringify({
-        name: name.trim() || cleanEmail.split("@")[0] || "AlphaForge user",
-        email: cleanEmail,
-        createdAt: new Date().toISOString(),
-      })
-    );
+    const user = {
+      name: name.trim() || cleanEmail.split("@")[0] || "AlphaForge user",
+      email: cleanEmail,
+      createdAt: new Date().toISOString(),
+    };
+    const serializedUser = JSON.stringify(user);
+
+    window.localStorage.setItem(demoUserKey, serializedUser);
+    setCookie(demoAuthKey, "1");
+    setCookie(demoUserKey, serializedUser);
     window.dispatchEvent(new Event("alphaforge-demo-auth"));
-    router.push("/dashboard");
+    router.push(redirectTarget());
   }
 
   const isSignUp = mode === "sign-up";
@@ -58,7 +78,9 @@ export function DemoAuthCard({ mode }: { mode: "sign-in" | "sign-up" }) {
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
-            type="email"
+            type="text"
+            inputMode="email"
+            autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"

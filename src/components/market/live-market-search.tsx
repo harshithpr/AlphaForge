@@ -51,7 +51,7 @@ type LiveSearchResponse = {
 };
 
 export function LiveMarketSearch() {
-  const [query, setQuery] = useState("quantum AI");
+  const [query, setQuery] = useState("7203.T");
   const [data, setData] = useState<LiveSearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,12 +104,11 @@ export function LiveMarketSearch() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <Globe2 className="size-5 text-cyan-300" aria-hidden />
-              Live Stock & Web Search
+              Global Live Universe Search
             </CardTitle>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-              Search beyond the curated stock list. Server-side lookup pulls live symbols, company
-              names, prices, percent changes, exchanges, sectors, news, and optional broad web
-              results when a search API key is configured.
+              Search beyond the scored sample. Use tickers, company names, ETFs, crypto pairs, and
+              local exchange suffixes like `7203.T`, `ASML.AS`, `0700.HK`, or `RELIANCE.NS`.
             </p>
           </div>
           <Badge className="border-cyan-400/35 bg-cyan-400/10 text-cyan-100" variant="outline">
@@ -123,7 +122,7 @@ export function LiveMarketSearch() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               className="pl-9"
-              placeholder="Search stocks, AI themes, quantum, defense tech, macro risks..."
+              placeholder="Search NVDA, Toyota, 7203.T, ASML.AS, RELIANCE.NS, 0700.HK..."
             />
           </div>
           <Button type="submit" disabled={loading}>
@@ -241,7 +240,7 @@ export function LiveMarketSearch() {
           </>
         ) : (
           <p className="rounded-lg border border-white/10 p-3 text-sm text-muted-foreground">
-            Try searches like `IONQ`, `defense AI`, `quantum computing`, `uranium`, or `AI data center cooling`.
+            Try searches like `7203.T`, `ASML.AS`, `RELIANCE.NS`, `0700.HK`, `IONQ`, or `AI data center cooling`.
           </p>
         )}
       </CardContent>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, Bell, BrainCircuit, LogIn, Menu, Search, Star, UserPlus, UserRound } from "lucide-react";
+import { BarChart3, Bell, BrainCircuit, LineChart, LogIn, Menu, Search, Star, UserPlus, UserRound } from "lucide-react";
 import { AuthControls } from "@/components/market/auth-controls";
 import { AlphaForgeMark, AlphaForgeWordmark } from "@/components/market/brand-mark";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import { Disclaimer } from "@/components/market/disclaimer";
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
   { href: "/screener", label: "Screener", icon: Search },
+  { href: "/research", label: "Research", icon: LineChart },
   { href: "/watchlist", label: "Watchlist", icon: Star },
   { href: "/ai-explain", label: "Explain", icon: BrainCircuit },
   { href: "/about", label: "About", icon: UserRound },

@@ -13,17 +13,36 @@ const fmpStockSchema = z.object({
   type: z.string().optional(),
 });
 
-export async function GET() {
+function readPaging(request: Request) {
+  const url = new URL(request.url);
+  const query = url.searchParams.get("q")?.trim().toLowerCase() ?? "";
+  const offset = Math.max(Number(url.searchParams.get("offset") ?? 0) || 0, 0);
+  const requestedLimit = Number(url.searchParams.get("limit") ?? 500) || 500;
+  const limit = Math.min(Math.max(requestedLimit, 1), 5000);
+
+  return { limit, offset, query };
+}
+
+export async function GET(request: Request) {
   const apiKey = process.env.FMP_API_KEY;
+  const { limit, offset, query } = readPaging(request);
 
   if (!apiKey) {
+    const filteredStocks = stocks.filter((stock) =>
+      `${stock.symbol} ${stock.name} ${stock.sector}`.toLowerCase().includes(query)
+    );
+    const page = filteredStocks.slice(offset, offset + limit);
+
     return Response.json({
       ok: true,
       provider: "demo-fallback",
-      count: stocks.length,
+      count: filteredStocks.length,
+      returned: page.length,
+      offset,
+      limit,
       updatedAt: new Date().toISOString(),
       warning: "Set FMP_API_KEY to enable the live global stock universe.",
-      stocks: stocks.map((stock) => ({
+      stocks: page.map((stock) => ({
         symbol: stock.symbol,
         name: stock.name,
         price: stock.price,
@@ -57,17 +76,28 @@ export async function GET() {
     const universe = parsed.success
       ? parsed.data
           .filter((stock) => stock.symbol && stock.name)
-          .slice(0, 500)
+          .filter((stock) =>
+            query
+              ? `${stock.symbol ?? ""} ${stock.name ?? ""} ${stock.exchange ?? ""} ${stock.exchangeShortName ?? ""} ${stock.type ?? ""}`
+                  .toLowerCase()
+                  .includes(query)
+              : true
+          )
       : [];
+    const page = universe.slice(offset, offset + limit);
 
     return Response.json({
       ok: true,
       provider: "financial-modeling-prep",
-      count: Array.isArray(raw) ? raw.length : universe.length,
-      returned: universe.length,
+      count: universe.length,
+      providerCount: Array.isArray(raw) ? raw.length : universe.length,
+      returned: page.length,
+      offset,
+      limit,
       updatedAt: new Date().toISOString(),
-      warning: "Global universe is capped to 500 symbols per response. Add database pagination before rendering larger sets.",
-      stocks: universe,
+      warning:
+        "Global universe is paginated to keep the app fast. Use q, offset, and limit to page through the provider universe.",
+      stocks: page,
     });
   } catch (error) {
     return Response.json({
