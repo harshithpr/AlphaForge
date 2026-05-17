@@ -32,6 +32,7 @@ export function TradingViewTerminal({ symbol }: { symbol: string }) {
     container.appendChild(widget);
 
     const script = document.createElement("script");
+    const done = () => setLoading(false);
     script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
     script.async = true;
     script.text = JSON.stringify({
@@ -49,11 +50,13 @@ export function TradingViewTerminal({ symbol }: { symbol: string }) {
       hide_side_toolbar: false,
       withdateranges: true,
     });
-    script.addEventListener("load", () => setLoading(false));
-    script.addEventListener("error", () => setLoading(false));
+    script.addEventListener("load", done);
+    script.addEventListener("error", done);
     container.appendChild(script);
 
     return () => {
+      script.removeEventListener("load", done);
+      script.removeEventListener("error", done);
       container.innerHTML = "";
     };
   }, [normalizedSymbol]);

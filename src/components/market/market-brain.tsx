@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { BrainCircuit, Clock, Database, Scale } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ClickableCard } from "@/components/market/clickable-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { MarketState } from "@/lib/types";
 
@@ -23,7 +23,7 @@ export function MarketBrain({ market }: { market: MarketState }) {
         </Badge>
       </CardHeader>
       <CardContent className="grid gap-4 2xl:grid-cols-3">
-        <div className="rounded-lg border border-white/10 p-4">
+        <ClickableCard href="/market-breadth" className="p-4">
           <p className="flex items-center gap-2 text-sm font-medium">
             <Scale className="size-4 text-sky-300" aria-hidden />
             Primary Drivers
@@ -33,24 +33,26 @@ export function MarketBrain({ market }: { market: MarketState }) {
               <li key={driver}>{driver}</li>
             ))}
           </ul>
-        </div>
-        <Link
+        </ClickableCard>
+        <ClickableCard
           href="/sectors/semiconductors"
-          className="block cursor-pointer rounded-lg border border-white/10 p-4 transition duration-200 hover:-translate-y-0.5 hover:border-cyan-400/60 hover:bg-cyan-400/5 hover:shadow-[0_0_28px_rgba(0,194,255,0.12)]"
+          className="min-w-0 overflow-hidden p-4"
         >
           <p className="flex items-center gap-2 text-sm font-medium">
             <Database className="size-4 text-emerald-300" aria-hidden />
             Attractive Areas
           </p>
-          <h3 className="text-sector-title mt-3 font-bold">{market.mostBullishSector}</h3>
+          <h3 className="mt-3 min-w-0 break-words text-3xl font-semibold leading-tight tracking-tight sm:text-4xl xl:text-3xl 2xl:text-4xl">
+            {market.mostBullishSector}
+          </h3>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Weakest breadth today: {market.mostBearishSector}. Ranking confidence falls when sector
             leadership narrows.
           </p>
-        </Link>
-        <Link
+        </ClickableCard>
+        <ClickableCard
           href="/risk"
-          className="block cursor-pointer rounded-lg border border-white/10 p-4 transition duration-200 hover:-translate-y-0.5 hover:border-cyan-400/60 hover:bg-cyan-400/5 hover:shadow-[0_0_28px_rgba(0,194,255,0.12)]"
+          className="p-4"
         >
           <p className="flex items-center gap-2 text-sm font-medium">
             <Clock className="size-4 text-amber-300" aria-hidden />
@@ -61,7 +63,7 @@ export function MarketBrain({ market }: { market: MarketState }) {
               <li key={risk}>{risk}</li>
             ))}
           </ul>
-        </Link>
+        </ClickableCard>
       </CardContent>
     </Card>
   );

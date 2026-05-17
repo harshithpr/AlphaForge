@@ -10,6 +10,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ClickableCard } from "@/components/market/clickable-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { formatMarketCap, formatPercent } from "@/lib/format";
@@ -104,7 +105,7 @@ export function SpeculativeRadar({
 
       <div className="grid gap-4 lg:grid-cols-3">
         {signals.slice(0, 6).map((signal) => (
-          <div key={signal.symbol} className="rounded-lg border border-white/10 bg-zinc-950/72 p-4">
+          <ClickableCard key={signal.symbol} href={`/stocks/${signal.symbol}`} className="bg-zinc-950/72 p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xl font-semibold">{signal.symbol}</p>
@@ -154,7 +155,7 @@ export function SpeculativeRadar({
                 <Progress value={signal.fundamentalsScore} aria-label={`${signal.symbol} fundamentals score`} />
               </div>
             </div>
-          </div>
+          </ClickableCard>
         ))}
       </div>
 
@@ -171,7 +172,7 @@ export function SpeculativeRadar({
           </CardHeader>
           <CardContent className="grid gap-3">
             {pennyStocks.map((stock) => (
-              <div key={stock.symbol} className="rounded-lg border border-white/10 p-3">
+              <ClickableCard key={stock.symbol} href={`/stocks/${stock.symbol}`} className="p-3">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold">{stock.symbol}</p>
@@ -188,7 +189,7 @@ export function SpeculativeRadar({
                   <MetricBar label="Dilution probability" value={stock.dilutionProbability} tone="risk" />
                 </div>
                 <p className="mt-3 text-sm leading-6 text-muted-foreground">{stock.warning}</p>
-              </div>
+              </ClickableCard>
             ))}
           </CardContent>
         </Card>
@@ -202,7 +203,7 @@ export function SpeculativeRadar({
           </CardHeader>
           <CardContent className="grid gap-3">
             {narratives.map((narrative) => (
-              <div key={narrative.theme} className="rounded-lg border border-white/10 p-3">
+              <ClickableCard key={narrative.theme} href="/trending" className="p-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="font-medium">{narrative.theme}</p>
                   <Badge variant="outline">{narrative.momentum}</Badge>
@@ -214,14 +215,14 @@ export function SpeculativeRadar({
                   Tracks: {narrative.trackedAreas.join(", ")}.
                 </p>
                 <p className="mt-2 text-xs leading-5 text-amber-100/80">{narrative.riskNote}</p>
-              </div>
+              </ClickableCard>
             ))}
           </CardContent>
         </Card>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-lg border border-white/10 bg-zinc-950/72 p-4">
+        <ClickableCard href="/high-risk" className="bg-zinc-950/72 p-4">
           <p className="flex items-center gap-2 font-medium">
             <ShieldAlert className="size-5 text-amber-300" aria-hidden />
             AI Bubble Risk Detector
@@ -234,9 +235,9 @@ export function SpeculativeRadar({
           <div className="mt-4">
             <MetricBar label="Sector overheating" value={bubbleRisk} tone="risk" />
           </div>
-        </div>
+        </ClickableCard>
 
-        <div className="rounded-lg border border-white/10 bg-zinc-950/72 p-4">
+        <ClickableCard href="/high-risk" className="bg-zinc-950/72 p-4">
           <p className="flex items-center gap-2 font-medium">
             <TrendingUp className="size-5 text-emerald-300" aria-hidden />
             Possible Multibagger Watch
@@ -253,9 +254,9 @@ export function SpeculativeRadar({
               </div>
             ))}
           </div>
-        </div>
+        </ClickableCard>
 
-        <div className="rounded-lg border border-white/10 bg-zinc-950/72 p-4">
+        <ClickableCard href="/speculative" className="bg-zinc-950/72 p-4">
           <p className="flex items-center gap-2 font-medium">
             <BrainCircuit className="size-5 text-sky-300" aria-hidden />
             Undervalued AI Scanner
@@ -274,7 +275,7 @@ export function SpeculativeRadar({
               </div>
             ))}
           </div>
-        </div>
+        </ClickableCard>
       </div>
 
       <Card className="rounded-lg border-white/10 bg-zinc-950/72">
@@ -286,7 +287,7 @@ export function SpeculativeRadar({
         </CardHeader>
         <CardContent className="grid gap-3 lg:grid-cols-3">
           {supplyChains.map((link) => (
-            <div key={link.chain} className="rounded-lg border border-white/10 p-3">
+            <ClickableCard key={link.chain} href="/sectors/semiconductors" className="p-3">
               <p className="font-mono text-sm text-emerald-200">{link.chain}</p>
               <p className="mt-2 flex items-center gap-2 text-sm font-medium">
                 <Cpu className="size-4 text-sky-300" aria-hidden />
@@ -299,13 +300,13 @@ export function SpeculativeRadar({
                 <Flame className="mt-0.5 size-3.5 shrink-0 text-amber-300" aria-hidden />
                 {link.risk}
               </p>
-            </div>
+            </ClickableCard>
           ))}
         </CardContent>
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-lg border border-white/10 bg-zinc-950/72 p-4">
+        <ClickableCard href="/speculative" className="bg-zinc-950/72 p-4">
           <p className="flex items-center gap-2 font-medium">
             <Atom className="size-5 text-sky-300" aria-hidden />
             Quantum Computing Watchlist
@@ -314,8 +315,8 @@ export function SpeculativeRadar({
             IonQ, Rigetti, D-Wave, and Quantum Computing Inc. should be tracked by contracts,
             research milestones, government funding, runway, and dilution risk.
           </p>
-        </div>
-        <div className="rounded-lg border border-white/10 bg-zinc-950/72 p-4">
+        </ClickableCard>
+        <ClickableCard href="/sectors/semiconductors" className="bg-zinc-950/72 p-4">
           <p className="flex items-center gap-2 font-medium">
             <Cpu className="size-5 text-emerald-300" aria-hidden />
             AI Infrastructure Tracker
@@ -324,7 +325,7 @@ export function SpeculativeRadar({
             Watch data centers, cooling, power demand, networking chips, fiber optics, and AI
             server supply chains. This is where quieter capital flow can show up first.
           </p>
-        </div>
+        </ClickableCard>
       </div>
     </section>
   );

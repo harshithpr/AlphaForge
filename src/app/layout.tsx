@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
-import { Geist_Mono, Inter, Space_Grotesk } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Inter, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
+import { CustomCursor } from "@/components/market/custom-cursor";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
 
@@ -10,20 +11,31 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const space = Space_Grotesk({
-  variable: "--font-space",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://apforges.vercel.app"),
   title: "AlphaForge | Market Intelligence Operating System",
   description:
     "Institutional-grade market intelligence with transparent scoring, risk controls, market state, and backtesting.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "AlphaForge | Market Intelligence Operating System",
+    description:
+      "Institutional-grade market intelligence with transparent scoring, risk controls, market state, and backtesting.",
+    url: "https://apforges.vercel.app",
+    siteName: "AlphaForge",
+    type: "website",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#070B14",
 };
 
 export default function RootLayout({
@@ -34,9 +46,10 @@ export default function RootLayout({
   const document = (
     <html
       lang="en"
-      className={`${inter.variable} ${space.variable} ${geistMono.variable} dark h-full antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <CustomCursor />
         <TooltipProvider>{children}</TooltipProvider>
         <Analytics />
       </body>

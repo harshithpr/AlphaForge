@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SectorSignal } from "@/lib/types";
 
@@ -22,19 +23,20 @@ export function SectorHeatmap({ sectors }: { sectors: SectorSignal[] }) {
             );
 
             return (
-              <div
+              <Link
                 key={sector.sector}
-                className={`min-h-28 rounded-lg border p-3 ${tileClass(composite)}`}
+                href={sector.sector === "Semiconductors" ? "/sectors/semiconductors" : "/market-breadth"}
+                className={`block min-h-28 min-w-0 overflow-hidden rounded-lg border p-3 transition hover:-translate-y-0.5 hover:border-cyan-400/60 ${tileClass(composite)}`}
               >
                 <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm font-medium">{sector.sector}</p>
+                  <p className="min-w-0 break-words text-sm font-medium">{sector.sector}</p>
                   <p className="font-mono text-lg">{composite}</p>
                 </div>
                 <p className="mt-6 text-xs text-current/75">{sector.label}</p>
                 <div className="mt-3 h-1 rounded-full bg-white/10">
                   <div className="h-1 rounded-full bg-current" style={{ width: `${composite}%` }} />
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

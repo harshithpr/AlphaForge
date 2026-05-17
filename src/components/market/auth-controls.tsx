@@ -14,7 +14,7 @@ export function AuthControls() {
         size="sm"
         disabled
         title="Add Clerk keys to enable Google sign-in."
-        className="hidden sm:inline-flex"
+        className="hidden min-h-11 px-4 sm:inline-flex md:min-h-8"
       >
         <LogIn className="size-4" aria-hidden />
         Sign in
@@ -30,7 +30,7 @@ function ClerkAuthControls() {
 
   if (!isLoaded) {
     return (
-      <Button variant="outline" size="sm" disabled className="hidden sm:inline-flex">
+      <Button variant="outline" size="sm" disabled className="hidden min-h-11 px-4 sm:inline-flex md:min-h-8">
         <LogIn className="size-4" aria-hidden />
         Sign in
       </Button>
@@ -54,7 +54,7 @@ function ClerkAuthControls() {
   return (
     <div className="hidden items-center sm:flex">
       <SignInButton mode="modal">
-        <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="min-h-11 px-4 md:min-h-8">
           <LogIn className="size-4" aria-hidden />
           Sign in
         </Button>

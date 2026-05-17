@@ -116,7 +116,7 @@ export function ScreenerClient({ stocks }: { stocks: ResearchStock[] }) {
       <div className="rounded-lg border border-white/10 bg-zinc-950/70 p-1">
         <div className="flex items-center justify-between px-3 py-2">
           <p className="text-sm text-muted-foreground">{filtered.length} matches</p>
-          <Badge variant="outline">Demo data · API-ready</Badge>
+          <Badge variant="outline">Global universe API-ready</Badge>
         </div>
         <ResearchTable stocks={filtered} />
       </div>

@@ -52,10 +52,13 @@ Core:
 
 - `DATABASE_URL`
 - `CRON_SECRET`
+- `NEXT_PUBLIC_SITE_URL`
 - `OPENAI_API_KEY`
 - `OPENAI_MODEL`
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
 - `CLERK_SECRET_KEY`
+- `NEXT_PUBLIC_CLERK_SIGN_IN_URL`
+- `NEXT_PUBLIC_CLERK_SIGN_UP_URL`
 
 Market data adapters to wire next:
 
@@ -113,3 +116,25 @@ Confidence is separate from score. It uses data completeness, source agreement, 
 5. Backtest every label and publish win rate, average return, drawdown, and Sharpe.
 6. Add source freshness and provider disagreement warnings.
 7. Add embeddings for news clustering and narrative detection.
+
+## Pre-push checklist
+
+Run before pushing:
+
+```bash
+npm run lint
+npm run build
+npm run test
+git status
+```
+
+Then confirm:
+
+- No console errors
+- No mobile overlap at 390px, 768px, 1024px, and 1440px
+- No broken links
+- No exposed API keys
+- No outdated branding
+- No fake investment promises
+
+Canonical production URL: `https://apforges.vercel.app`.

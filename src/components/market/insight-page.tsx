@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { AppShell } from "@/components/market/app-shell";
+import { ClickableCard } from "@/components/market/clickable-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -31,15 +32,17 @@ export function InsightPage({ eyebrow, title, description, metrics, notes }: Ins
         </section>
         <div className="grid gap-4 md:grid-cols-3">
           {metrics.map((metric) => (
-            <Card key={metric.label} className="rounded-lg border-white/10 bg-zinc-950/70">
-              <CardHeader>
-                <CardTitle className="text-sm text-muted-foreground">{metric.label}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-semibold tabular-nums">{metric.value}</p>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{metric.detail}</p>
-              </CardContent>
-            </Card>
+            <ClickableCard key={metric.label} href="/dashboard">
+              <Card className="h-full border-0 bg-transparent shadow-none">
+                <CardHeader>
+                  <CardTitle className="text-sm text-muted-foreground">{metric.label}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="break-words text-3xl font-semibold tabular-nums">{metric.value}</p>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{metric.detail}</p>
+                </CardContent>
+              </Card>
+            </ClickableCard>
           ))}
         </div>
         <Card className="rounded-lg border-white/10 bg-zinc-950/70">

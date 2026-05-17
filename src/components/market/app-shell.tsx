@@ -46,7 +46,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" aria-label="Alerts">
+                <Button variant="outline" size="icon" className="min-h-11 min-w-11 md:min-h-8 md:min-w-8" aria-label="Alerts">
                   <Bell className="size-4" aria-hidden />
                 </Button>
               </TooltipTrigger>
@@ -55,7 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <AuthControls />
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="md:hidden" aria-label="Open navigation">
+                <Button variant="outline" size="icon" className="min-h-11 min-w-11 md:hidden" aria-label="Open navigation">
                   <Menu className="size-4" aria-hidden />
                 </Button>
               </SheetTrigger>

@@ -10,8 +10,8 @@ export default function WatchlistPage() {
           <h1 className="text-4xl font-semibold">Watchlist</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Saved symbols get daily change explanations, risk drift, confidence shifts, and source
-            freshness checks. This MVP stores the list locally; auth-backed persistence is ready for
-            Clerk, Supabase Auth, or database users.
+            freshness checks. Public research stays open; sign in with Google to save unlimited
+            watchlist items once Clerk keys are configured.
           </p>
         </div>
         <WatchlistClient stocks={stocks} />

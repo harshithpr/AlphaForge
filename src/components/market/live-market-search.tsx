@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { ExternalLink, Globe2, Loader2, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,16 +55,16 @@ export function LiveMarketSearch() {
   const [data, setData] = useState<LiveSearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastSearch, setLastSearch] = useState<string | null>(null);
 
-  async function search(event?: FormEvent<HTMLFormElement>) {
-    event?.preventDefault();
-    if (!query.trim()) return;
+  const runSearch = useCallback(async (searchQuery: string, options?: { silent?: boolean }) => {
+    if (!searchQuery.trim()) return;
 
-    setLoading(true);
+    if (!options?.silent) setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`/api/search/live?q=${encodeURIComponent(query.trim())}`, {
+      const response = await fetch(`/api/search/live?q=${encodeURIComponent(searchQuery.trim())}`, {
         cache: "no-store",
       });
       const payload = (await response.json()) as LiveSearchResponse & { error?: string };
@@ -74,12 +74,28 @@ export function LiveMarketSearch() {
       }
 
       setData(payload);
+      setLastSearch(searchQuery.trim());
     } catch (searchError) {
       setError(searchError instanceof Error ? searchError.message : "Live search failed");
     } finally {
-      setLoading(false);
+      if (!options?.silent) setLoading(false);
     }
+  }, []);
+
+  async function search(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault();
+    await runSearch(query);
   }
+
+  useEffect(() => {
+    if (!lastSearch) return;
+
+    const id = window.setInterval(() => {
+      void runSearch(lastSearch, { silent: true });
+    }, 60_000);
+
+    return () => window.clearInterval(id);
+  }, [lastSearch, runSearch]);
 
   return (
     <Card className="rounded-lg border-cyan-400/20 bg-[#0E1628]/78">
@@ -218,6 +234,10 @@ export function LiveMarketSearch() {
               </div>
             </div>
             <p className="text-xs leading-5 text-muted-foreground">{data.disclaimer}</p>
+            <p className="text-xs leading-5 text-muted-foreground">
+              Market data updates automatically every 60 seconds after a search. Results may vary
+              during live trading hours.
+            </p>
           </>
         ) : (
           <p className="rounded-lg border border-white/10 p-3 text-sm text-muted-foreground">
