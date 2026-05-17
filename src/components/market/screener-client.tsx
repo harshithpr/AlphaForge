@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ResearchTable } from "@/components/market/research-table";
+import { ResearchTable, type LiveQuote } from "@/components/market/research-table";
 import type { ResearchStock } from "@/lib/types";
+
+function chunk<T>(arr: T[], size: number) {
+  return Array.from({ length: Math.ceil(arr.length / size) }, (_, index) =>
+    arr.slice(index * size, index * size + size)
+  );
+}
+
+function isMarketOpenNow() {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    weekday: "short",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: false,
+  }).formatToParts(now);
+
+  const weekday = parts.find((part) => part.type === "weekday")?.value;
+  const hour = Number(parts.find((part) => part.type === "hour")?.value);
+  const minute = Number(parts.find((part) => part.type === "minute")?.value);
+  const total = hour * 60 + minute;
+  const isWeekday = weekday !== "Sat" && weekday !== "Sun";
+
+  return isWeekday && total >= 570 && total < 960;
+}
 
 export function ScreenerClient({ stocks }: { stocks: ResearchStock[] }) {
   const [query, setQuery] = useState("");
@@ -22,6 +47,9 @@ export function ScreenerClient({ stocks }: { stocks: ResearchStock[] }) {
   const [timeframe, setTimeframe] = useState("all");
   const [risk, setRisk] = useState("all");
   const [minimumScore, setMinimumScore] = useState("60");
+  const [quotes, setQuotes] = useState<Record<string, LiveQuote>>({});
+  const [quoteUpdatedAt, setQuoteUpdatedAt] = useState<string | null>(null);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
 
   const sectors = useMemo(() => ["all", ...Array.from(new Set(stocks.map((stock) => stock.sector)))], [stocks]);
 
@@ -42,6 +70,59 @@ export function ScreenerClient({ stocks }: { stocks: ResearchStock[] }) {
       return textMatch && sectorMatch && riskMatch && scoreMatch;
     });
   }, [minimumScore, query, risk, sector, stocks, timeframe]);
+
+  const symbols = useMemo(() => filtered.map((stock) => stock.symbol).slice(0, 200), [filtered]);
+  const symbolsKey = symbols.join(",");
+  const marketOpen = isMarketOpenNow();
+
+  useEffect(() => {
+    if (symbols.length === 0) {
+      return;
+    }
+
+    let active = true;
+    const controller = new AbortController();
+
+    async function loadQuotes() {
+      try {
+        setQuoteError(null);
+        const batches = chunk(symbols, 60);
+        const responses = await Promise.all(
+          batches.map(async (batch) => {
+            const response = await fetch(`/api/quotes?symbols=${encodeURIComponent(batch.join(","))}`, {
+              cache: "no-store",
+              signal: controller.signal,
+            });
+            return (await response.json()) as { quotes?: LiveQuote[]; error?: string; updatedAt?: string };
+          })
+        );
+
+        if (!active) return;
+
+        const nextQuotes = Object.fromEntries(
+          responses.flatMap((response) => response.quotes ?? []).map((quote) => [quote.symbol, quote])
+        );
+        setQuotes(nextQuotes);
+        setQuoteUpdatedAt(new Date().toISOString());
+        const error = responses.find((response) => response.error)?.error;
+        setQuoteError(error ?? null);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        if (active) setQuoteError("Live quotes unavailable. Static research scores are still visible.");
+      }
+    }
+
+    void loadQuotes();
+    const id = window.setInterval(() => {
+      void loadQuotes();
+    }, marketOpen ? 30_000 : 5 * 60_000);
+
+    return () => {
+      active = false;
+      controller.abort();
+      window.clearInterval(id);
+    };
+  }, [marketOpen, symbols, symbolsKey]);
 
   return (
     <div className="grid gap-5">
@@ -114,11 +195,23 @@ export function ScreenerClient({ stocks }: { stocks: ResearchStock[] }) {
         </div>
       </div>
       <div className="rounded-lg border border-white/10 bg-zinc-950/70 p-1">
-        <div className="flex items-center justify-between px-3 py-2">
-          <p className="text-sm text-muted-foreground">{filtered.length} matches</p>
-          <Badge variant="outline">Global universe API-ready</Badge>
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
+          <div>
+            <p className="text-sm text-muted-foreground">{filtered.length} matches</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Live market data refreshes automatically during active trading hours. Results may vary.
+              {quoteUpdatedAt ? ` Updated ${new Date(quoteUpdatedAt).toLocaleTimeString()}.` : ""}
+            </p>
+            {quoteError ? <p className="mt-1 text-xs text-amber-200">{quoteError}</p> : null}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge className={marketOpen ? "border-emerald-400/35 bg-emerald-400/10 text-emerald-200" : "border-amber-400/35 bg-amber-400/10 text-amber-200"} variant="outline">
+              {marketOpen ? "Market Open" : "Market Closed"}
+            </Badge>
+            <Badge variant="outline">Stocks, ETFs, and crypto research universe</Badge>
+          </div>
         </div>
-        <ResearchTable stocks={filtered} />
+        <ResearchTable stocks={filtered} quotes={quotes} />
       </div>
     </div>
   );

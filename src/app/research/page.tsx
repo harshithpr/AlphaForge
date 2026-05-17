@@ -16,7 +16,7 @@ export default async function ResearchPage({
           <p className="text-sm font-medium uppercase tracking-[0.24em] text-cyan-200">
             Research tools
           </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl xl:text-4xl">
             Live Research Terminal
           </h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">

@@ -10,7 +10,7 @@ export default function ScreenerPage() {
     <AppShell>
       <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-6 md:py-8">
         <div>
-          <h1 className="text-4xl font-semibold">Global Market Screener</h1>
+          <h1 className="break-words text-3xl font-semibold sm:text-4xl xl:text-4xl">Global Market Screener</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             Search equities across major global exchanges using live market data. Results may vary
             during active trading hours. Demo rankings remain visible until a global provider key is

@@ -51,7 +51,7 @@ export default function Home() {
                 <AlphaForgeMark className="size-14" />
                 <AlphaForgeWordmark />
               </div>
-              <h1 className="max-w-3xl text-4xl font-semibold leading-tight md:text-6xl">
+              <h1 className="max-w-3xl text-3xl font-semibold leading-tight sm:text-4xl lg:text-4xl">
                 Understand the market before the market understands itself.
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-300 md:text-lg">

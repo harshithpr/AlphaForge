@@ -1,6 +1,7 @@
 import { BrainCircuit, CheckCircle2, CircleSlash, ShieldCheck } from "lucide-react";
 import { AppShell } from "@/components/market/app-shell";
 import { ScoreBreakdown } from "@/components/market/score-breakdown";
+import { StockExplainBox } from "@/components/market/stock-explain-box";
 import { TruthSocialPanel } from "@/components/market/truth-social-panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +14,8 @@ export default function AiExplanationPage() {
   return (
     <AppShell>
       <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-6 md:py-8">
+        <StockExplainBox />
+
         <div className="grid gap-6 lg:grid-cols-[1fr_0.8fr]">
           <Card className="rounded-lg border-white/10 bg-zinc-950/70">
             <CardHeader>

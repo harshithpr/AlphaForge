@@ -1,7 +1,13 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const isProtectedRoute = createRouteMatcher(["/watchlist(.*)", "/debug(.*)"]);
+const isProtectedRoute = createRouteMatcher([
+  "/watchlist(.*)",
+  "/debug(.*)",
+  "/explain(.*)",
+  "/ai-explain(.*)",
+  "/research(.*)",
+]);
 const clerkConfigured = Boolean(
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY
 );

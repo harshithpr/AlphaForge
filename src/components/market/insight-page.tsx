@@ -25,7 +25,7 @@ export function InsightPage({ eyebrow, title, description, metrics, notes }: Ins
         </Button>
         <section className="rounded-lg border border-white/10 bg-[#0E1628]/70 p-6">
           <p className="text-sm font-medium uppercase tracking-[0.24em] text-cyan-200">{eyebrow}</p>
-          <h1 className="mt-4 max-w-4xl text-4xl font-semibold tracking-tight md:text-6xl">{title}</h1>
+          <h1 className="mt-4 max-w-4xl break-words text-3xl font-semibold tracking-tight sm:text-4xl xl:text-4xl">{title}</h1>
           <p className="mt-5 max-w-3xl text-base leading-7 text-muted-foreground md:text-lg">
             {description}
           </p>

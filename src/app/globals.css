@@ -121,12 +121,18 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply font-sans;
+    font-size: 15px;
+  }
+  @media (max-width: 640px) {
+    html {
+      font-size: 14px;
+    }
+  }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  }
-  html {
-    @apply font-sans;
   }
   h1,
   h2,

@@ -27,7 +27,7 @@ export default function AboutPage() {
               <p className="text-sm font-medium uppercase tracking-[0.24em] text-cyan-200">
                 About the builder
               </p>
-              <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
+              <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl xl:text-4xl">
                 Harshith Praveen
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-[#E8F1FF]/78">

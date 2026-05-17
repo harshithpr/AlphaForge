@@ -13,6 +13,22 @@ const truthStatusSchema = z.object({
     .optional(),
 });
 
+const braveSearchSchema = z.object({
+  web: z
+    .object({
+      results: z
+        .array(
+          z.object({
+            title: z.string(),
+            url: z.string().url().optional(),
+            description: z.string().optional(),
+          })
+        )
+        .optional(),
+    })
+    .optional(),
+});
+
 const stripHtml = (html: string) =>
   html
     .replace(/<br\s*\/?>/gi, " ")
@@ -33,6 +49,109 @@ export type ExternalSocialSignal = {
   reliability: "experimental";
   matchedKeywords: string[];
 };
+
+export type GeopoliticalFeedItem = {
+  title: string;
+  description: string;
+  url: string | null;
+};
+
+export type GeopoliticalFeed = {
+  connected: boolean;
+  source: string;
+  warning: string;
+  items: GeopoliticalFeedItem[];
+  updatedAt: string;
+};
+
+export async function fetchGeopoliticalFeed(): Promise<GeopoliticalFeed> {
+  const apiKey = process.env.BRAVE_SEARCH_API_KEY;
+  const updatedAt = new Date().toISOString();
+
+  if (!apiKey) {
+    return {
+      connected: false,
+      source: "Demo feed",
+      warning: "Add BRAVE_SEARCH_API_KEY to connect live geopolitical and market-risk search.",
+      items: [
+        {
+          title: "Live geopolitical feed not connected",
+          description:
+            "AlphaForge will use a live web search provider here once a Brave Search key is added in Vercel Environment Variables.",
+          url: null,
+        },
+        {
+          title: "Risk themes tracked by this feed",
+          description:
+            "Markets, geopolitical risk, semiconductors, oil, rates, technology regulation, defense, and supply-chain disruption.",
+          url: null,
+        },
+      ],
+      updatedAt,
+    };
+  }
+
+  const query = encodeURIComponent(
+    "markets geopolitical risk semiconductors oil rates technology supply chain defense AI"
+  );
+
+  try {
+    const response = await fetch(
+      `https://api.search.brave.com/res/v1/web/search?q=${query}&count=10&freshness=pd`,
+      {
+        cache: "no-store",
+        headers: {
+          Accept: "application/json",
+          "X-Subscription-Token": apiKey,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      return {
+        connected: false,
+        source: "Brave Search",
+        warning: `Live geopolitical feed returned ${response.status}. Check the API key or provider limits.`,
+        items: [],
+        updatedAt,
+      };
+    }
+
+    const raw = await response.json();
+    const parsed = braveSearchSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      return {
+        connected: false,
+        source: "Brave Search",
+        warning: "Live geopolitical feed response did not match the expected shape.",
+        items: [],
+        updatedAt,
+      };
+    }
+
+    return {
+      connected: true,
+      source: "Brave Search",
+      warning: "Live geopolitical search is active. Treat headlines as risk context, not recommendations.",
+      items:
+        parsed.data.web?.results?.map((item) => ({
+          title: stripHtml(item.title),
+          description: stripHtml(item.description ?? "No summary available."),
+          url: item.url ?? null,
+        })) ?? [],
+      updatedAt,
+    };
+  } catch (error) {
+    return {
+      connected: false,
+      source: "Brave Search",
+      warning: error instanceof Error ? error.message : "Live geopolitical feed unavailable.",
+      items: [],
+      updatedAt,
+    };
+  }
+}
 
 export async function fetchTruthSocialSignals() {
   const accountId = process.env.TRUTH_SOCIAL_ACCOUNT_ID;

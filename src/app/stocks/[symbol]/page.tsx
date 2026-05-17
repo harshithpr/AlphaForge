@@ -39,7 +39,7 @@ export default async function StockPage({ params }: { params: Promise<{ symbol: 
               </Badge>
               <div>
                 <p className="text-sm text-muted-foreground">Ticker lookup</p>
-                <h1 className="mt-2 text-5xl font-semibold tracking-tight">{normalizedSymbol}</h1>
+                <h1 className="mt-2 break-words text-2xl font-semibold tracking-tight sm:text-3xl xl:text-4xl">{normalizedSymbol}</h1>
                 <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
                   This symbol is outside the demo ranking set, so AlphaForge opens it as a live
                   research target instead of pretending a full score exists. Use the research

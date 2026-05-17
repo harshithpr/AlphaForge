@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
+import { CookieConsent } from "@/components/market/cookie-consent";
 import { CustomCursor } from "@/components/market/custom-cursor";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
@@ -51,6 +52,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <CustomCursor />
         <TooltipProvider>{children}</TooltipProvider>
+        <CookieConsent />
         <Analytics />
       </body>
     </html>

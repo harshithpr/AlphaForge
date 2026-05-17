@@ -12,7 +12,7 @@ AlphaForge is an explainable stock research assistant, not a guaranteed picker. 
 - Live stock and web search with Yahoo Finance quotes/news, 45-second server-side caching, and optional Brave Search results
 - Screener with sector, risk, timeframe, and score filters
 - Local watchlist MVP with change explanations
-- API routes for stocks, market state, AI explanation, cron jobs, and an optional Truth Social geopolitical signal connector
+- API routes for stocks, market state, quote overlays, explainable stock pros/cons, cron jobs, and an optional Brave Search geopolitical feed
 - `/api/speculative-radar` for high-volatility watchlist signals, penny-stock warnings, emerging tech narratives, and semiconductor supply-chain links
 - Neon/Supabase-compatible Postgres schema in `db/schema.sql`
 - Vercel Cron configuration in `vercel.json`
@@ -59,6 +59,8 @@ Core:
 - `CLERK_SECRET_KEY`
 - `NEXT_PUBLIC_CLERK_SIGN_IN_URL`
 - `NEXT_PUBLIC_CLERK_SIGN_UP_URL`
+- `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL`
+- `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL`
 
 Market data adapters to wire next:
 
@@ -69,6 +71,7 @@ Market data adapters to wire next:
 - `FMP_API_KEY`
 - `NEWS_API_KEY`
 - `FRED_API_KEY`
+- `BRAVE_SEARCH_API_KEY`
 
 Optional geopolitical social feed:
 
@@ -78,6 +81,8 @@ Optional geopolitical social feed:
 - `TRUTH_SOCIAL_KEYWORDS`
 
 Truth Social access is intentionally optional because official third-party API access is not a stable dependency. Treat it as an experimental headline/risk source, not a recommendation input by itself.
+
+The default geopolitical feed uses `BRAVE_SEARCH_API_KEY` when present and falls back to clearly labeled demo items when it is not configured.
 
 ## Cron jobs
 
