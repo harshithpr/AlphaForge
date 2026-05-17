@@ -76,12 +76,9 @@ Truth Social access is intentionally optional because official third-party API a
 
 `vercel.json` configures:
 
-- Every 15 minutes: `/api/cron/prices`
-- Hourly: `/api/cron/news`
-- Daily: `/api/cron/daily`
-- Daily after refresh: `/api/cron/recalculate`
+- Daily on Vercel Hobby: `/api/cron/refresh` at `0 9 * * *`
 
-Each route checks `Authorization: Bearer $CRON_SECRET`. Frequent schedules may require a paid Vercel plan.
+The refresh route checks `Authorization: Bearer $CRON_SECRET`. Frequent schedules such as 15-minute price refreshes should be added later through GitHub Actions or a paid Vercel plan.
 
 ## Scoring model
 

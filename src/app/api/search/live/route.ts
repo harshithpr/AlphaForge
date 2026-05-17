@@ -77,6 +77,10 @@ type QuoteDetail = {
   quoteType?: string;
 };
 
+function isQuoteDetail(value: QuoteDetail | null): value is QuoteDetail {
+  return Boolean(value);
+}
+
 async function fetchJson(url: string, headers?: HeadersInit) {
   const response = await fetch(url, {
     cache: "no-store",
@@ -129,7 +133,7 @@ export async function GET(request: Request) {
       if (symbols.length > 0) {
         quoteDetails = (
           await Promise.all(
-            symbols.map(async (symbol) => {
+            symbols.map(async (symbol): Promise<QuoteDetail | null> => {
               try {
                 const chartUrl = new URL(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}`);
                 chartUrl.searchParams.set("interval", "1d");
@@ -139,28 +143,30 @@ export async function GET(request: Request) {
                 const meta = parsedChart.success ? parsedChart.data.chart.result?.[0]?.meta : undefined;
                 const sourceQuote = quotes.find((quote) => quote.symbol === symbol);
                 const price = meta?.regularMarketPrice;
+                if (typeof price !== "number") return null;
+
                 const previousClose = meta?.chartPreviousClose;
                 const changePercent =
-                  typeof price === "number" && typeof previousClose === "number" && previousClose !== 0
+                  typeof previousClose === "number" && previousClose !== 0
                     ? ((price - previousClose) / previousClose) * 100
                     : undefined;
 
                 return {
                   symbol,
-                  shortName: sourceQuote?.shortname,
-                  longName: sourceQuote?.longname,
                   regularMarketPrice: price,
-                  regularMarketChangePercent: changePercent,
-                  regularMarketVolume: meta?.regularMarketVolume,
-                  exchange: sourceQuote?.exchDisp || meta?.exchangeName,
-                  quoteType: sourceQuote?.quoteType || meta?.instrumentType,
+                  ...(sourceQuote?.shortname ? { shortName: sourceQuote.shortname } : {}),
+                  ...(sourceQuote?.longname ? { longName: sourceQuote.longname } : {}),
+                  ...(typeof changePercent === "number" ? { regularMarketChangePercent: changePercent } : {}),
+                  ...(typeof meta?.regularMarketVolume === "number" ? { regularMarketVolume: meta.regularMarketVolume } : {}),
+                  ...(sourceQuote?.exchDisp || meta?.exchangeName ? { exchange: sourceQuote?.exchDisp || meta?.exchangeName } : {}),
+                  ...(sourceQuote?.quoteType || meta?.instrumentType ? { quoteType: sourceQuote?.quoteType || meta?.instrumentType } : {}),
                 };
               } catch {
                 return null;
               }
             })
           )
-        ).filter((quote): quote is QuoteDetail => Boolean(quote) && typeof quote.regularMarketPrice === "number");
+        ).filter(isQuoteDetail);
       }
     }
   } catch (error) {
