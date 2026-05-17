@@ -16,6 +16,7 @@ export type LiveQuote = {
   marketState: string;
   updatedAt: string;
   isLive?: boolean;
+  source?: string;
 };
 
 export function ResearchTable({

@@ -4,11 +4,22 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { formatMarketCap, formatPercent, labelTone } from "@/lib/format";
+import type { LiveQuote } from "@/components/market/research-table";
 import type { ResearchStock } from "@/lib/types";
 
-export function StockCard({ stock, mode }: { stock: ResearchStock; mode: "long" | "short" }) {
+export function StockCard({
+  stock,
+  mode,
+  quote,
+}: {
+  stock: ResearchStock;
+  mode: "long" | "short";
+  quote?: LiveQuote;
+}) {
   const score = mode === "long" ? stock.longTermScore : stock.shortTermScore;
   const scoreLabel = mode === "long" ? "Long-term" : "Short-term";
+  const price = quote?.price ?? stock.price;
+  const changePercent = quote?.changePercent ?? stock.changePercent;
 
   return (
     <Link href={`/stocks/${stock.symbol}`} className="group block min-w-0 rounded-lg">
@@ -32,10 +43,16 @@ export function StockCard({ stock, mode }: { stock: ResearchStock; mode: "long" 
         <CardContent className="grid gap-4">
           <div className="flex items-end justify-between gap-3">
             <div>
-              <p className="text-2xl font-semibold tabular-nums">${stock.price.toFixed(2)}</p>
-              <p className={stock.changePercent >= 0 ? "text-sm text-emerald-300" : "text-sm text-rose-300"}>
-                {formatPercent(stock.changePercent)} today
+              <p className="text-2xl font-semibold tabular-nums">${price.toFixed(2)}</p>
+              <p className={changePercent >= 0 ? "text-sm text-emerald-300" : "text-sm text-rose-300"}>
+                {formatPercent(changePercent)} today
               </p>
+              {quote?.updatedAt ? (
+                <p className="mt-1 text-[0.68rem] text-muted-foreground">
+                  {quote.isLive === false ? "Fallback" : "Live"}{" "}
+                  {new Date(quote.updatedAt).toLocaleTimeString()}
+                </p>
+              ) : null}
             </div>
             <div className="text-right">
               <p className="text-3xl font-semibold tabular-nums">{score}</p>

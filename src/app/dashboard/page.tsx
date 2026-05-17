@@ -1,19 +1,16 @@
-import { Activity, BarChart3, Database, History, Radar } from "lucide-react";
+import { Activity, Database, History, Radar } from "lucide-react";
 import { AppShell } from "@/components/market/app-shell";
 import { AlphaForgeMark, AlphaForgeWordmark } from "@/components/market/brand-mark";
 import { ClickableCard } from "@/components/market/clickable-card";
+import { DashboardLiveSections } from "@/components/market/dashboard-live-sections";
 import { LiveMarketSearch } from "@/components/market/live-market-search";
 import { MarketBrain } from "@/components/market/market-brain";
 import { MarketPulse } from "@/components/market/market-pulse";
 import { MarketStatusBanner } from "@/components/market/market-status-banner";
 import { NewsFeed } from "@/components/market/news-feed";
-import { ResearchTable } from "@/components/market/research-table";
 import { SectorHeatmap } from "@/components/market/sector-heatmap";
-import { SpeculativeRadar } from "@/components/market/speculative-radar";
-import { StockCard } from "@/components/market/stock-card";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   backtests,
   emergingNarratives,
@@ -30,9 +27,6 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default function Home() {
-  const longTerm = [...stocks].sort((a, b) => b.longTermScore - a.longTermScore).slice(0, 3);
-  const shortTerm = [...stocks].sort((a, b) => b.shortTermScore - a.shortTermScore).slice(0, 3);
-
   return (
     <AppShell>
       <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-6 md:px-6 md:py-8">
@@ -86,27 +80,9 @@ export default function Home() {
 
         <LiveMarketSearch />
 
-        <Tabs defaultValue="long" className="grid gap-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="text-2xl font-semibold">Main Research Sections</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Core recommendations stay separate from speculative radar signals.</p>
-            </div>
-            <TabsList>
-              <TabsTrigger value="long">Long-Term Investments</TabsTrigger>
-              <TabsTrigger value="short">Short-Term Momentum</TabsTrigger>
-            </TabsList>
-          </div>
-          <TabsContent value="long" className="grid gap-4 md:grid-cols-3">
-            {longTerm.map((stock) => <StockCard key={stock.symbol} stock={stock} mode="long" />)}
-          </TabsContent>
-          <TabsContent value="short" className="grid gap-4 md:grid-cols-3">
-            {shortTerm.map((stock) => <StockCard key={stock.symbol} stock={stock} mode="short" />)}
-          </TabsContent>
-        </Tabs>
-
-        <SpeculativeRadar
-          signals={speculativeSignals}
+        <DashboardLiveSections
+          stocks={stocks}
+          speculativeSignals={speculativeSignals}
           pennyStocks={pennyStockSignals}
           narratives={emergingNarratives}
           supplyChains={supplyChainLinks}
@@ -117,18 +93,7 @@ export default function Home() {
           <NewsFeed news={latestNews.slice(0, 5)} />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-          <Card className="rounded-lg border-white/10 bg-zinc-950/70">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="size-5 text-sky-300" aria-hidden />
-                Full Ranking Table
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResearchTable stocks={stocks} />
-            </CardContent>
-          </Card>
+        <div className="grid gap-6">
           <Card className="rounded-lg border-white/10 bg-zinc-950/70">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

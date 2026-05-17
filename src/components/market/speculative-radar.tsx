@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { ClickableCard } from "@/components/market/clickable-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import type { LiveQuote } from "@/components/market/research-table";
 import { formatMarketCap, formatPercent } from "@/lib/format";
 import type {
   EmergingNarrative,
@@ -60,11 +61,13 @@ export function SpeculativeRadar({
   pennyStocks,
   narratives,
   supplyChains,
+  quotes,
 }: {
   signals: SpeculativeSignal[];
   pennyStocks: PennyStockSignal[];
   narratives: EmergingNarrative[];
   supplyChains: SupplyChainLink[];
+  quotes?: Record<string, LiveQuote>;
 }) {
   const multibaggers = signals
     .filter((signal) => signal.marketCap < 5_000_000_000 && signal.narrativeStrength >= 70)
@@ -104,59 +107,69 @@ export function SpeculativeRadar({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {signals.slice(0, 6).map((signal) => (
-          <ClickableCard key={signal.symbol} href={`/stocks/${signal.symbol}`} className="bg-zinc-950/72 p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xl font-semibold">{signal.symbol}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{signal.name}</p>
+        {signals.slice(0, 6).map((signal) => {
+          const quote = quotes?.[signal.symbol];
+          const changePercent = quote?.changePercent ?? signal.changePercent;
+
+          return (
+            <ClickableCard key={signal.symbol} href={`/stocks/${signal.symbol}`} className="bg-zinc-950/72 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xl font-semibold">{signal.symbol}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{signal.name}</p>
+                </div>
+                <Badge className={convictionTone(signal.aiConviction)} variant="outline">
+                  AI Conviction: {signal.aiConviction}
+                </Badge>
               </div>
-              <Badge className={convictionTone(signal.aiConviction)} variant="outline">
-                AI Conviction: {signal.aiConviction}
-              </Badge>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <Badge variant="secondary">{signal.theme}</Badge>
-              <span>{formatMarketCap(signal.marketCap)}</span>
-              <span className={signal.changePercent >= 0 ? "text-emerald-300" : "text-rose-300"}>
-                {formatPercent(signal.changePercent)}
-              </span>
-            </div>
-            <div className="mt-4 grid gap-3">
-              <MetricBar label="Volatility meter" value={signal.volatility} tone="risk" />
-              <MetricBar label="Hype score" value={signal.hypeScore} tone="risk" />
-              <MetricBar label="Fundamentals" value={signal.fundamentalsScore} />
-              <MetricBar label="Institutional interest" value={signal.institutionalInterest} />
-            </div>
-            <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
-              <div className="rounded-lg border border-white/10 p-2">
-                <p className="text-muted-foreground">Runway</p>
-                <p className="mt-1 font-mono">{signal.cashRunwayMonths} mo</p>
-              </div>
-              <div className="rounded-lg border border-white/10 p-2">
-                <p className="text-muted-foreground">Dilution</p>
-                <p className="mt-1">{signal.dilutionRisk}</p>
-              </div>
-              <div className="rounded-lg border border-white/10 p-2">
-                <p className="text-muted-foreground">Survival</p>
-                <p className="mt-1 font-mono">{signal.survivalProbability}</p>
-              </div>
-            </div>
-            <p className="mt-4 text-sm leading-6 text-zinc-300">{signal.signal}</p>
-            <div className="mt-4 rounded-lg border border-white/10 p-3">
-              <div className="flex items-center justify-between gap-3 text-xs">
-                <span className="text-muted-foreground">Hype vs Fundamentals</span>
-                <span className="font-mono">
-                  {signal.hypeScore}/{signal.fundamentalsScore}
+              <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <Badge variant="secondary">{signal.theme}</Badge>
+                <span>{formatMarketCap(signal.marketCap)}</span>
+                <span className={changePercent >= 0 ? "text-emerald-300" : "text-rose-300"}>
+                  {formatPercent(changePercent)}
                 </span>
+                {quote?.updatedAt ? (
+                  <span>
+                    {quote.isLive === false ? "fallback" : "live"} {new Date(quote.updatedAt).toLocaleTimeString()}
+                  </span>
+                ) : null}
               </div>
-              <div className="mt-2 grid gap-1">
-                <Progress value={signal.hypeScore} aria-label={`${signal.symbol} hype score`} />
-                <Progress value={signal.fundamentalsScore} aria-label={`${signal.symbol} fundamentals score`} />
+              <div className="mt-4 grid gap-3">
+                <MetricBar label="Volatility meter" value={signal.volatility} tone="risk" />
+                <MetricBar label="Hype score" value={signal.hypeScore} tone="risk" />
+                <MetricBar label="Fundamentals" value={signal.fundamentalsScore} />
+                <MetricBar label="Institutional interest" value={signal.institutionalInterest} />
               </div>
-            </div>
-          </ClickableCard>
-        ))}
+              <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+                <div className="rounded-lg border border-white/10 p-2">
+                  <p className="text-muted-foreground">Runway</p>
+                  <p className="mt-1 font-mono">{signal.cashRunwayMonths} mo</p>
+                </div>
+                <div className="rounded-lg border border-white/10 p-2">
+                  <p className="text-muted-foreground">Dilution</p>
+                  <p className="mt-1">{signal.dilutionRisk}</p>
+                </div>
+                <div className="rounded-lg border border-white/10 p-2">
+                  <p className="text-muted-foreground">Survival</p>
+                  <p className="mt-1 font-mono">{signal.survivalProbability}</p>
+                </div>
+              </div>
+              <p className="mt-4 text-sm leading-6 text-zinc-300">{signal.signal}</p>
+              <div className="mt-4 rounded-lg border border-white/10 p-3">
+                <div className="flex items-center justify-between gap-3 text-xs">
+                  <span className="text-muted-foreground">Hype vs Fundamentals</span>
+                  <span className="font-mono">
+                    {signal.hypeScore}/{signal.fundamentalsScore}
+                  </span>
+                </div>
+                <div className="mt-2 grid gap-1">
+                  <Progress value={signal.hypeScore} aria-label={`${signal.symbol} hype score`} />
+                  <Progress value={signal.fundamentalsScore} aria-label={`${signal.symbol} fundamentals score`} />
+                </div>
+              </div>
+            </ClickableCard>
+          );
+        })}
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
@@ -171,26 +184,37 @@ export function SpeculativeRadar({
             </p>
           </CardHeader>
           <CardContent className="grid gap-3">
-            {pennyStocks.map((stock) => (
-              <ClickableCard key={stock.symbol} href={`/stocks/${stock.symbol}`} className="p-3">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold">{stock.symbol}</p>
-                    <p className="text-xs text-muted-foreground">{stock.name}</p>
+            {pennyStocks.map((stock) => {
+              const quote = quotes?.[stock.symbol];
+              const price = quote?.price ?? stock.price;
+
+              return (
+                <ClickableCard key={stock.symbol} href={`/stocks/${stock.symbol}`} className="p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="font-semibold">{stock.symbol}</p>
+                      <p className="text-xs text-muted-foreground">{stock.name}</p>
+                      {quote?.updatedAt ? (
+                        <p className="mt-1 text-[0.68rem] text-muted-foreground/70">
+                          {quote.isLive === false ? "Fallback" : "Live"}{" "}
+                          {new Date(quote.updatedAt).toLocaleTimeString()}
+                        </p>
+                      ) : null}
+                    </div>
+                    <Badge className="border-rose-400/35 bg-rose-400/10 text-rose-200" variant="outline">
+                      ${price.toFixed(2)}
+                    </Badge>
                   </div>
-                  <Badge className="border-rose-400/35 bg-rose-400/10 text-rose-200" variant="outline">
-                    ${stock.price.toFixed(2)}
-                  </Badge>
-                </div>
-                <div className="mt-3 grid gap-2 md:grid-cols-2">
-                  <MetricBar label="Volume spike" value={stock.volumeSpike} />
-                  <MetricBar label="Social momentum" value={stock.socialMomentum} />
-                  <MetricBar label="Financing risk" value={stock.financingRisk} tone="risk" />
-                  <MetricBar label="Dilution probability" value={stock.dilutionProbability} tone="risk" />
-                </div>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">{stock.warning}</p>
-              </ClickableCard>
-            ))}
+                  <div className="mt-3 grid gap-2 md:grid-cols-2">
+                    <MetricBar label="Volume spike" value={stock.volumeSpike} />
+                    <MetricBar label="Social momentum" value={stock.socialMomentum} />
+                    <MetricBar label="Financing risk" value={stock.financingRisk} tone="risk" />
+                    <MetricBar label="Dilution probability" value={stock.dilutionProbability} tone="risk" />
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">{stock.warning}</p>
+                </ClickableCard>
+              );
+            })}
           </CardContent>
         </Card>
 
