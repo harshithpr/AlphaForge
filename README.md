@@ -1,6 +1,6 @@
-# AlphaForge AI
+# AlphaForge
 
-AlphaForge AI is an explainable stock research assistant, not a guaranteed picker. It combines fundamentals, valuation, earnings quality, momentum, sentiment, macro conditions, and risk controls into transparent 0-100 scores. AI is used only to summarize and explain the evidence.
+AlphaForge is an explainable stock research assistant, not a guaranteed picker. It combines fundamentals, valuation, earnings quality, momentum, sentiment, macro conditions, and risk controls into transparent 0-100 scores. Automation is used only to summarize and explain the evidence.
 
 ## What is built
 
@@ -8,6 +8,8 @@ AlphaForge AI is an explainable stock research assistant, not a guaranteed picke
 - Dashboard with market pulse, Market Brain, long-term rankings, short-term setups, sector heatmap, news inputs, and backtest summary
 - A separated High Risk / High Reward speculative intelligence lane for AI, semiconductors, quantum, penny-stock risk checks, emerging narratives, and supply-chain mapping
 - Stock detail pages with Recharts price chart, score breakdowns, bull/bear case, risk notes, dates, and source trace
+- `/research?symbol=NASDAQ:NVDA` TradingView research terminal with lazy-loaded advanced charting
+- Live stock and web search with Yahoo Finance quotes/news, 45-second server-side caching, and optional Brave Search results
 - Screener with sector, risk, timeframe, and score filters
 - Local watchlist MVP with change explanations
 - API routes for stocks, market state, AI explanation, cron jobs, and an optional Truth Social geopolitical signal connector
@@ -17,7 +19,7 @@ AlphaForge AI is an explainable stock research assistant, not a guaranteed picke
 
 ## Guardrails
 
-AlphaForge AI should never say:
+AlphaForge should never say:
 
 - "Buy this now"
 - "Guaranteed gains"
@@ -32,7 +34,7 @@ Use these labels instead:
 - High Risk
 - Avoid for Now
 
-The app includes this disclaimer: "This app is for educational research only and is not financial advice."
+The app includes this disclaimer: "AlphaForge provides automated market research for educational purposes only. This is not financial advice."
 
 ## Local setup
 
@@ -52,6 +54,8 @@ Core:
 - `CRON_SECRET`
 - `OPENAI_API_KEY`
 - `OPENAI_MODEL`
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
 
 Market data adapters to wire next:
 

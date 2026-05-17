@@ -56,7 +56,7 @@ export async function fetchTruthSocialSignals() {
     {
       headers: {
         Accept: "application/json",
-        "User-Agent": "AlphaForge AI research assistant",
+        "User-Agent": "AlphaForge research assistant",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       next: { revalidate: 60 },

@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ArrowLeft, CalendarDays, ExternalLink, ShieldAlert } from "lucide-react";
+import { ArrowLeft, CalendarDays, ExternalLink, LineChart, Search, ShieldAlert } from "lucide-react";
 import { AppShell } from "@/components/market/app-shell";
 import { NewsFeed } from "@/components/market/news-feed";
 import { PriceChart } from "@/components/market/price-chart";
@@ -19,10 +18,76 @@ export function generateStaticParams() {
 
 export default async function StockPage({ params }: { params: Promise<{ symbol: string }> }) {
   const { symbol } = await params;
-  const stock = stocks.find((candidate) => candidate.symbol === symbol.toUpperCase());
+  const normalizedSymbol = symbol.toUpperCase();
+  const stock = stocks.find((candidate) => candidate.symbol === normalizedSymbol);
 
   if (!stock) {
-    notFound();
+    return (
+      <AppShell>
+        <div className="mx-auto grid w-full max-w-5xl gap-6 px-4 py-6 md:px-6 md:py-8">
+          <Button asChild variant="ghost" size="sm" className="w-fit">
+            <Link href="/dashboard">
+              <ArrowLeft className="size-4" aria-hidden />
+              Dashboard
+            </Link>
+          </Button>
+
+          <Card className="rounded-lg border-cyan-400/20 bg-[#0E1628]/78">
+            <CardHeader className="gap-3">
+              <Badge className="w-fit border-cyan-400/35 bg-cyan-400/10 text-cyan-100" variant="outline">
+                Live research symbol
+              </Badge>
+              <div>
+                <p className="text-sm text-muted-foreground">Ticker lookup</p>
+                <h1 className="mt-2 text-5xl font-semibold tracking-tight">{normalizedSymbol}</h1>
+                <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+                  This symbol is outside the demo ranking set, so AlphaForge opens it as a live
+                  research target instead of pretending a full score exists. Use the research
+                  terminal for charting, indicators, market news, and technical context.
+                </p>
+              </div>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-3">
+              <div className="rounded-lg border border-white/10 p-4">
+                <Search className="size-5 text-cyan-300" aria-hidden />
+                <p className="mt-3 font-medium">Live search first</p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  Pull quote, exchange, sector, news, and source notes from the server-side search route.
+                </p>
+              </div>
+              <div className="rounded-lg border border-white/10 p-4">
+                <LineChart className="size-5 text-violet-300" aria-hidden />
+                <p className="mt-3 font-medium">TradingView research</p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  Open advanced charts with symbol search and indicators without loading the widget on the homepage.
+                </p>
+              </div>
+              <div className="rounded-lg border border-white/10 p-4">
+                <ShieldAlert className="size-5 text-amber-300" aria-hidden />
+                <p className="mt-3 font-medium">No fake score</p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  A scored recommendation appears only after enough fundamentals, risk, news, and price history are available.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3 md:col-span-3">
+                <Button asChild>
+                  <Link href={`/research?symbol=${encodeURIComponent(`NASDAQ:${normalizedSymbol}`)}`}>
+                    <LineChart className="size-4" aria-hidden />
+                    Open research terminal
+                  </Link>
+                </Button>
+                <Button asChild variant="outline">
+                  <Link href="/dashboard">
+                    <Search className="size-4" aria-hidden />
+                    Search live data
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </AppShell>
+    );
   }
 
   const longFactors = Object.values(stock.longTermBreakdown);

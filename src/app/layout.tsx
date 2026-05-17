@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Inter, Space_Grotesk } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
@@ -20,9 +21,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AlphaForge AI | Market Intelligence Operating System",
+  title: "AlphaForge | Market Intelligence Operating System",
   description:
-    "Institutional-grade AI market intelligence with transparent scoring, risk controls, market state, and backtesting.",
+    "Institutional-grade market intelligence with transparent scoring, risk controls, market state, and backtesting.",
 };
 
 export default function RootLayout({
@@ -30,7 +31,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
+  const document = (
     <html
       lang="en"
       className={`${inter.variable} ${space.variable} ${geistMono.variable} dark h-full antialiased`}
@@ -41,4 +42,10 @@ export default function RootLayout({
       </body>
     </html>
   );
+
+  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    return document;
+  }
+
+  return <ClerkProvider>{document}</ClerkProvider>;
 }

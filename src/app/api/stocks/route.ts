@@ -5,6 +5,7 @@ export async function GET() {
     ok: true,
     marketState,
     stocks,
-    disclaimer: "Educational research only. Not financial advice.",
+    disclaimer:
+      "AlphaForge provides automated market research for educational purposes only. This is not financial advice.",
   });
 }

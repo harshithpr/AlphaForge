@@ -14,6 +14,7 @@ export async function GET(
   return Response.json({
     ok: true,
     stock,
-    disclaimer: "Educational research only. Not financial advice.",
+    disclaimer:
+      "AlphaForge provides automated market research for educational purposes only. This is not financial advice.",
   });
 }

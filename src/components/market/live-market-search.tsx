@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { ExternalLink, Globe2, Loader2, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,8 @@ type QuoteDetail = {
   marketCap?: number;
   exchange?: string;
   quoteType?: string;
+  sector?: string;
+  industry?: string;
 };
 
 type NewsResult = {
@@ -37,6 +40,7 @@ type LiveSearchResponse = {
   ok: boolean;
   query: string;
   updatedAt: string;
+  cached?: boolean;
   sources: string[];
   yahooError: string | null;
   webSearchNote: string;
@@ -84,11 +88,12 @@ export function LiveMarketSearch() {
           <div>
             <CardTitle className="flex items-center gap-2">
               <Globe2 className="size-5 text-cyan-300" aria-hidden />
-              Live Market Web Search
+              Live Stock & Web Search
             </CardTitle>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-              Search beyond the curated stock list. Server-side lookup can pull live market symbols,
-              quotes, news, and optional broad web results when a search API key is configured.
+              Search beyond the curated stock list. Server-side lookup pulls live symbols, company
+              names, prices, percent changes, exchanges, sectors, news, and optional broad web
+              results when a search API key is configured.
             </p>
           </div>
           <Badge className="border-cyan-400/35 bg-cyan-400/10 text-cyan-100" variant="outline">
@@ -121,6 +126,7 @@ export function LiveMarketSearch() {
           <>
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <span>Updated {new Date(data.updatedAt).toLocaleTimeString()}</span>
+              {data.cached ? <Badge variant="outline">45s cache</Badge> : null}
               {data.sources.map((source) => (
                 <Badge key={source} variant="outline">{source}</Badge>
               ))}
@@ -132,12 +138,19 @@ export function LiveMarketSearch() {
             ) : null}
             <div className="grid gap-3 lg:grid-cols-3">
               {data.quoteDetails.slice(0, 6).map((quote) => (
-                <div key={quote.symbol} className="rounded-lg border border-white/10 bg-[#070B14]/55 p-3">
+                <Link
+                  key={quote.symbol}
+                  href={`/stocks/${encodeURIComponent(quote.symbol)}`}
+                  className="block rounded-lg border border-white/10 bg-[#070B14]/55 p-3 transition hover:-translate-y-0.5 hover:border-cyan-400/50 hover:bg-cyan-400/5"
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-semibold">{quote.symbol}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
                         {quote.shortName || quote.longName || quote.quoteType || "Market result"}
+                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {quote.sector || quote.industry || "Sector unknown"}
                       </p>
                     </div>
                     <Badge variant="outline">{quote.exchange || quote.quoteType || "Live"}</Badge>
@@ -154,7 +167,7 @@ export function LiveMarketSearch() {
                     Market cap: {quote.marketCap ? formatMarketCap(quote.marketCap) : "unknown"} · Volume:{" "}
                     {quote.regularMarketVolume?.toLocaleString() ?? "unknown"}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
             <div className="grid gap-3 lg:grid-cols-2">

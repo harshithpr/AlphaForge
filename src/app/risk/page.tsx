@@ -6,7 +6,7 @@ export default function RiskPage() {
     <InsightPage
       eyebrow="Risk dashboard"
       title="Biggest Risks"
-      description="The risk dashboard keeps downside pressure visible so AlphaForge AI does not become a hype engine."
+      description="The risk dashboard keeps downside pressure visible so AlphaForge does not become a hype engine."
       metrics={[
         { label: "Macro risk", value: `${marketState.macroRisk}`, detail: "Rates, inflation, labor, and geopolitical pressure." },
         { label: "Volatility", value: marketState.vix.toFixed(1), detail: "Expected market turbulence proxy." },

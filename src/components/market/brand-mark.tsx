@@ -5,7 +5,7 @@ export function AlphaForgeMark({ className }: { className?: string }) {
     <svg
       viewBox="0 0 48 48"
       role="img"
-      aria-label="AlphaForge AI mark"
+      aria-label="AlphaForge mark"
       className={cn("size-9", className)}
     >
       <defs>
@@ -51,13 +51,9 @@ export function AlphaForgeMark({ className }: { className?: string }) {
 
 export function AlphaForgeWordmark({ className }: { className?: string }) {
   return (
-    <span className={cn("flex items-center gap-2", className)}>
+    <span className={cn("flex items-center", className)}>
       <span className="brand text-[0.78rem] font-semibold tracking-[0.24em] text-[#E8F1FF]">
         ALPHAFORGE
-      </span>
-      <span className="h-4 w-px bg-[#E8F1FF]/20" aria-hidden />
-      <span className="brand text-[0.72rem] font-medium tracking-[0.24em] text-[#00C2FF]">
-        AI
       </span>
     </span>
   );

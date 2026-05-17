@@ -35,7 +35,7 @@ export default function Home() {
           <div className="hero-intelligence-field relative flex min-h-[470px] flex-col justify-between overflow-hidden rounded-lg border border-white/10 p-6">
             <div className="relative z-10 flex flex-wrap items-center gap-2">
               <Badge className="border-cyan-400/35 bg-cyan-400/10 text-cyan-100" variant="outline">
-                AI market operating system
+                Market intelligence operating system
               </Badge>
               <Badge variant="outline">Demo data · API-ready</Badge>
             </div>
@@ -48,7 +48,7 @@ export default function Home() {
                 Understand the market before the market understands itself.
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-300 md:text-lg">
-                AlphaForge AI scores fundamentals, momentum, sentiment, macro context, and risk
+                AlphaForge scores fundamentals, momentum, sentiment, macro context, and risk
                 controls, then separates stable research ideas from speculative emerging-tech
                 signals.
               </p>

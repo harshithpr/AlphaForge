@@ -13,6 +13,7 @@ const yahooSearchSchema = z.object({
         quoteType: z.string().optional(),
         sector: z.string().optional(),
         industry: z.string().optional(),
+        marketCap: z.number().optional(),
       })
     )
     .optional(),
@@ -40,6 +41,7 @@ const yahooChartSchema = z.object({
             regularMarketPrice: z.number().optional(),
             chartPreviousClose: z.number().optional(),
             regularMarketVolume: z.number().optional(),
+            marketCap: z.number().optional(),
           }),
         })
       )
@@ -73,9 +75,29 @@ type QuoteDetail = {
   regularMarketPrice?: number;
   regularMarketChangePercent?: number;
   regularMarketVolume?: number;
+  marketCap?: number;
   exchange?: string;
   quoteType?: string;
+  sector?: string;
+  industry?: string;
 };
+
+type LiveSearchPayload = {
+  ok: true;
+  query: string;
+  updatedAt: string;
+  sources: string[];
+  yahooError: string | null;
+  webSearchNote: string;
+  quotes: YahooSearchQuote[];
+  quoteDetails: QuoteDetail[];
+  news: YahooSearchNews[];
+  webResults: BraveWebResult[];
+  disclaimer: string;
+};
+
+const CACHE_TTL_MS = 45_000;
+const liveSearchCache = new Map<string, { expiresAt: number; payload: LiveSearchPayload }>();
 
 function isQuoteDetail(value: QuoteDetail | null): value is QuoteDetail {
   return Boolean(value);
@@ -86,7 +108,7 @@ async function fetchJson(url: string, headers?: HeadersInit) {
     cache: "no-store",
     headers: {
       Accept: "application/json",
-      "User-Agent": "AlphaForge AI live market search",
+      "User-Agent": "AlphaForge live market search",
       ...headers,
     },
   });
@@ -104,6 +126,12 @@ export async function GET(request: Request) {
 
   if (!query) {
     return Response.json({ ok: false, error: "Missing search query" }, { status: 400 });
+  }
+
+  const cacheKey = query.toLowerCase();
+  const cached = liveSearchCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return Response.json({ ...cached.payload, cached: true });
   }
 
   const yahooSearchUrl = new URL("https://query1.finance.yahoo.com/v1/finance/search");
@@ -158,8 +186,13 @@ export async function GET(request: Request) {
                   ...(sourceQuote?.longname ? { longName: sourceQuote.longname } : {}),
                   ...(typeof changePercent === "number" ? { regularMarketChangePercent: changePercent } : {}),
                   ...(typeof meta?.regularMarketVolume === "number" ? { regularMarketVolume: meta.regularMarketVolume } : {}),
+                  ...(typeof sourceQuote?.marketCap === "number" || typeof meta?.marketCap === "number"
+                    ? { marketCap: sourceQuote?.marketCap ?? meta?.marketCap }
+                    : {}),
                   ...(sourceQuote?.exchDisp || meta?.exchangeName ? { exchange: sourceQuote?.exchDisp || meta?.exchangeName } : {}),
                   ...(sourceQuote?.quoteType || meta?.instrumentType ? { quoteType: sourceQuote?.quoteType || meta?.instrumentType } : {}),
+                  ...(sourceQuote?.sector ? { sector: sourceQuote.sector } : {}),
+                  ...(sourceQuote?.industry ? { industry: sourceQuote.industry } : {}),
                 };
               } catch {
                 return null;
@@ -192,7 +225,7 @@ export async function GET(request: Request) {
     }
   }
 
-  return Response.json({
+  const payload: LiveSearchPayload = {
     ok: true,
     query,
     updatedAt: new Date().toISOString(),
@@ -207,6 +240,13 @@ export async function GET(request: Request) {
     news,
     webResults,
     disclaimer:
-      "Live data is for educational research only. Verify prices, filings, and news with primary or licensed sources before relying on them.",
+      "AlphaForge provides automated market research for educational purposes only. This is not financial advice. Verify prices, filings, and news with primary or licensed sources before relying on them.",
+  };
+
+  liveSearchCache.set(cacheKey, {
+    expiresAt: Date.now() + CACHE_TTL_MS,
+    payload,
   });
+
+  return Response.json(payload);
 }

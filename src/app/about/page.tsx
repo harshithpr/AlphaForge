@@ -32,8 +32,8 @@ export default function AboutPage() {
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-[#E8F1FF]/78">
                 Harshith Praveen is a student developer and aspiring aerospace engineer building
-                AI-powered systems for market intelligence, advanced technology, and futuristic
-                software design.
+                intelligence-driven systems for market intelligence, advanced technology, and
+                futuristic software design.
               </p>
             </div>
           </CardContent>
