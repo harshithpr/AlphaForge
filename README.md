@@ -1,6 +1,46 @@
 # AlphaForge
 
+[Live Demo](https://apforges.vercel.app)
+
+![AlphaForge social preview](public/github-social-preview.png)
+
 AlphaForge is an explainable stock research assistant, not a guaranteed picker. It combines fundamentals, valuation, earnings quality, momentum, sentiment, macro conditions, and risk controls into transparent 0-100 scores. Automation is used only to summarize and explain the evidence.
+
+## Public showcase
+
+AlphaForge is a futuristic market intelligence and global stock research platform focused on live data, sentiment, risk analysis, and advanced market insights.
+
+Core experience:
+
+- Live market intelligence
+- Intelligence-driven insights
+- Global market screener
+- Semiconductor radar
+- Risk signals
+- Interactive research systems
+- Auth-gated watchlists and personal research workspace
+
+## Product screenshots
+
+| Dashboard | Global screener |
+| --- | --- |
+| ![AlphaForge dashboard](public/screenshots/dashboard.png) | ![AlphaForge global screener](public/screenshots/screener.png) |
+
+| Research terminal | Stock charts |
+| --- | --- |
+| ![AlphaForge live research terminal](public/screenshots/research.png) | ![AlphaForge stock charts](public/screenshots/charts.png) |
+
+| Explain page | Watchlist |
+| --- | --- |
+| ![AlphaForge explain page](public/screenshots/explain.png) | ![AlphaForge watchlist](public/screenshots/watchlist.png) |
+
+| Semiconductor radar |
+| --- | --- |
+| ![AlphaForge semiconductor section](public/screenshots/semiconductors.png) |
+
+## Motion preview
+
+![AlphaForge interface motion preview](public/screenshots/alpha-forge-motion.gif)
 
 ## What is built
 
@@ -61,6 +101,10 @@ Core:
 - `NEXT_PUBLIC_CLERK_SIGN_UP_URL`
 - `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL`
 - `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL`
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL`
+
+`RESEND_API_KEY` and `RESEND_FROM_EMAIL` enable the modern login-confirmation email for demo/local sign-ins. Without those values, the sign-in flow still works and the email route returns a safe no-op response.
 
 Market data adapters to wire next:
 

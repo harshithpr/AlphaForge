@@ -3,13 +3,28 @@
 import { useEffect, useState } from "react";
 
 const storageKey = "alphaforge-cookie-consent";
+const cookieMaxAge = 60 * 60 * 24 * 365;
+
+function readConsentCookie() {
+  return document.cookie
+    .split("; ")
+    .find((cookie) => cookie.startsWith(`${storageKey}=`))
+    ?.split("=")[1];
+}
+
+function writeConsent(value: "accepted" | "rejected") {
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+
+  window.localStorage.setItem(storageKey, value);
+  document.cookie = `${storageKey}=${value}; Path=/; Max-Age=${cookieMaxAge}; SameSite=Lax${secure}`;
+}
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
-      const accepted = window.localStorage.getItem(storageKey);
+      const accepted = window.localStorage.getItem(storageKey) ?? readConsentCookie();
       if (!accepted) setVisible(true);
     }, 0);
 
@@ -17,12 +32,12 @@ export function CookieConsent() {
   }, []);
 
   function accept() {
-    window.localStorage.setItem(storageKey, "accepted");
+    writeConsent("accepted");
     setVisible(false);
   }
 
   function reject() {
-    window.localStorage.setItem(storageKey, "rejected");
+    writeConsent("rejected");
     setVisible(false);
   }
 

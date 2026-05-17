@@ -27,6 +27,19 @@ function redirectTarget() {
   return "/dashboard";
 }
 
+function sendLoginEmail(user: { name: string; email: string }) {
+  void fetch("/api/auth/demo-login-email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+    keepalive: true,
+  }).catch(() => {
+    // Email is a best-effort confirmation and should never block sign-in.
+  });
+}
+
 export function DemoAuthCard({ mode }: { mode: "sign-in" | "sign-up" }) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -48,6 +61,7 @@ export function DemoAuthCard({ mode }: { mode: "sign-in" | "sign-up" }) {
     setCookie(demoAuthKey, "1");
     setCookie(demoUserKey, serializedUser);
     window.dispatchEvent(new Event("alphaforge-demo-auth"));
+    sendLoginEmail(user);
     router.push(redirectTarget());
   }
 
@@ -70,7 +84,7 @@ export function DemoAuthCard({ mode }: { mode: "sign-in" | "sign-up" }) {
               id="name"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="Harshith Praveen"
+              placeholder="Your name"
             />
           </div>
         ) : null}

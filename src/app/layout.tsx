@@ -2,10 +2,15 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { CookieConsent } from "@/components/market/cookie-consent";
 import { CustomCursor } from "@/components/market/custom-cursor";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
+
+const siteUrl = "https://apforges.vercel.app";
+const siteDescription =
+  "Futuristic market intelligence and global stock research platform focused on live data, sentiment, risk analysis, and advanced market insights.";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -18,20 +23,39 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://apforges.vercel.app"),
-  title: "AlphaForge | Market Intelligence Operating System",
-  description:
-    "Institutional-grade market intelligence with transparent scoring, risk controls, market state, and backtesting.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "AlphaForge",
+    template: "%s | AlphaForge",
+  },
+  description: siteDescription,
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "AlphaForge | Market Intelligence Operating System",
-    description:
-      "Institutional-grade market intelligence with transparent scoring, risk controls, market state, and backtesting.",
-    url: "https://apforges.vercel.app",
+    title: "AlphaForge",
+    description: siteDescription,
+    url: siteUrl,
     siteName: "AlphaForge",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AlphaForge market intelligence social preview with finance charts and AI signal lines.",
+      },
+    ],
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AlphaForge",
+    description: siteDescription,
+    images: ["/og-image.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
   },
 };
 
@@ -54,6 +78,7 @@ export default function RootLayout({
         <TooltipProvider>{children}</TooltipProvider>
         <CookieConsent />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

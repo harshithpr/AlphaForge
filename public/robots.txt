@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api/*
+Disallow: /debug
+
+# Host
+Host: https://apforges.vercel.app
+
+# Sitemaps
+Sitemap: https://apforges.vercel.app/sitemap.xml
